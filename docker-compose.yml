@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: npm run dev
+
+  ml-service:
+    build: ./ml-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ml-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  llm-service:
+    build: ./llm-service
+    ports:
+      - "5100:5100"
+    env_file:
+      - ./llm-service/.env
+    depends_on:
+      - redis
+    volumes:
+      - ./llm-service:/app
+      - /app/node_modules
+    command: npm run dev
+
+  client:
+    build: ./client
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+      - VITE_LLM_URL=http://localhost:5100
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+
+volumes:
+  redis_data:
