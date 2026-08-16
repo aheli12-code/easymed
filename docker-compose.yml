@@ -23,6 +23,19 @@ services:
       - /app/node_modules
     command: npm run dev
 
+  worker:
+    build: ./server
+    env_file:
+      - ./server/.env
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    command: npm run worker
+
   ml-service:
     build: ./ml-service
     ports:

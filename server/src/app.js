@@ -9,6 +9,8 @@ import { env } from "./config/env.js";
 import { authRouter } from "./routes/auth.routes.js";
 import { userRouter } from "./routes/user.routes.js";
 import { doctorRouter } from "./routes/doctor.routes.js";
+import { appointmentRouter } from "./routes/appointment.routes.js";
+import { recordRouter } from "./routes/record.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 export function createApp() {
@@ -33,6 +35,12 @@ export function createApp() {
   app.use("/api/auth", authRouter);
   app.use("/api/users", userRouter);
   app.use("/api/doctors", doctorRouter);
+  app.use("/api/appointments", appointmentRouter);
+  app.use("/api/records", recordRouter);
+
+  // Serve uploaded record files. In production, swap for signed S3/Cloudinary
+  // URLs instead of serving from local disk.
+  app.use("/uploads", express.static("uploads"));
 
   // 404
   app.use((req, res) => res.status(404).json({ message: "Not found" }));
