@@ -8,7 +8,7 @@
     "start": "node src/server.js",
     "worker": "node src/workers/reminder.worker.js",
     "lint": "eslint src",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
